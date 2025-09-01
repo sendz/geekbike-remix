@@ -1,7 +1,5 @@
 import type { MetaFunction } from "@remix-run/cloudflare";
-import { useEffect } from "react";
 import { Hero } from "~/components/Hero";
-import { useTheme } from "~/contexts/ThemeProvider";
 
 export const meta: MetaFunction = () => {
   return [
