@@ -24,3 +24,7 @@ STRAVA_CLUB_ID = "1460333"
 
 [triggers]
 crons = ["1 17 * * *"]  # Every day at 17:01 UTC (which is 00:01 UTC+7)
+
+[observability]
+enabled = true
+head_sampling_rate = 1 # optional. default = 1.
