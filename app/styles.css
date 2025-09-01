@@ -2,7 +2,6 @@
 
 @plugin "daisyui";
 
-
 @plugin "daisyui/theme" {
   name: "halloween";
   default: true;

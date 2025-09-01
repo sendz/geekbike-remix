@@ -3,8 +3,8 @@ import { Hero } from "~/components/Hero";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "Geek Bike Community" },
+    { name: "description", content: "Geek Bike Community Indonesia" },
   ];
 };
 
