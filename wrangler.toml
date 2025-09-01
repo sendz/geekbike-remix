@@ -17,3 +17,7 @@ command = "npm run build"
 binding = "db"
 database_name = "geekbike"
 database_id = "2f66ae09-b510-4fd0-be3c-23697273846f"
+
+[vars]
+STRAVA_API_URL = "https://www.strava.com/api"
+STRAVA_CLUB_ID = "1460333"
