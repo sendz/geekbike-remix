@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs } from "@remix-run/server-runtime";
+import { json, LoaderFunctionArgs } from "@remix-run/server-runtime";
 import moment from "moment-timezone"
 import { StravaActivity } from "~/types/StravaActivity.type";
 
@@ -18,12 +18,21 @@ export async function action({
   const url = new URL(`${env.STRAVA_API_URL}/v3/clubs/${env.STRAVA_CLUB_ID}/activities`);
 
   const body = await request.json() as FetchActivitiesParams
+  const header = request.headers
+
+  console.log('HEADERS', header)
+
+  if (!header.get('Authorization') || (header.get('Authorization')?.split('Bearer ')[1] !== env.API_SECRET_KEY)) {
+    throw json({ status: 'Unauthorized'}, { status: 401})
+  }
 
   if (body.range) {
     const afterTime = moment().tz("Asia/Jakarta").startOf(body.range).subtract(1, body.range)
+    const beforeTime = moment().tz("Asia/Jakarta").endOf(body.range).subtract(1, body.range)
 
     console.log("GET DATE AFTER ", afterTime.toLocaleString())
     url.searchParams.append("after", afterTime.unix().toString())
+    url.searchParams.append("before", beforeTime.unix().toString())
   }
 
   if (!body.page && !body.per_page) {
@@ -37,15 +46,15 @@ export async function action({
 
   console.log("REQUEST URL", url.toString());
 
-  const response: Array<StravaActivity> = await fetch(url.toString(), {
+  const response = await fetch(url.toString(), {
     headers: {
       'Authorization': `Bearer ${env.STRAVA_ACCESS_TOKEN}`
     }
-  }).then(resp => resp.json())
+  })
 
-  const data = response.filter(activity => activity.sport_type.toLowerCase() === "ride")
+  const data =  await response.json() as Array<StravaActivity>
 
-  console.log("ACTIVITIES", data.length)
+  console.log("ACTIVITIES", response)
 
-  return data
+  return json(data)
 }

@@ -7,5 +7,6 @@ interface Env {
 	STRAVA_CLIENT_SECRET: string;
 	STRAVA_ACCESS_TOKEN: string;
 	STRAVA_REFRESH_TOKEN: string;
+	API_SECRET_KEY: string;
 	db: D1Database;
 }
