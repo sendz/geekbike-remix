@@ -1,5 +1,5 @@
 #:schema node_modules/wrangler/config-schema.json
-name = "remix-cloudflare-workers-template"
+name = "geekbike"
 
 main = "./server.ts"
 workers_dev = true
@@ -21,3 +21,6 @@ database_id = "2f66ae09-b510-4fd0-be3c-23697273846f"
 [vars]
 STRAVA_API_URL = "https://www.strava.com/api"
 STRAVA_CLUB_ID = "1460333"
+
+[triggers]
+crons = ["1 17 * * *"]  # Every day at 17:01 UTC (which is 00:01 UTC+7)

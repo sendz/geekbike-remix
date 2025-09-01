@@ -3,6 +3,7 @@
 interface Env {
 	STRAVA_API_URL: "https://www.strava.com/api";
 	STRAVA_CLUB_ID: "1460333";
+	INTERNAL_URL: "https://geekbike.sendzation.workers.dev";
 	STRAVA_CLIENT_ID: string;
 	STRAVA_CLIENT_SECRET: string;
 	STRAVA_ACCESS_TOKEN: string;
