@@ -56,5 +56,9 @@ export async function action({
 
   console.log("ACTIVITIES", response)
 
-  return json(data)
+  if (response.ok) {
+    return json(data)
+  }
+
+  return json(data, { status: response.status })
 }
