@@ -28,11 +28,9 @@ export async function action({
 
   if (body.range) {
     const afterTime = moment().tz("Asia/Jakarta").startOf(body.range).subtract(1, body.range)
-    const beforeTime = moment().tz("Asia/Jakarta").endOf(body.range).subtract(1, body.range)
 
     console.log("GET DATE AFTER ", afterTime.toLocaleString())
     url.searchParams.append("after", afterTime.unix().toString())
-    url.searchParams.append("before", beforeTime.unix().toString())
   }
 
   if (!body.page && !body.per_page) {
@@ -57,7 +55,7 @@ export async function action({
   console.log("ACTIVITIES", response)
 
   if (response.ok) {
-    return json(data)
+    return json(data.filter(activity => activity.sport_type.toLowerCase() === "ride"))
   }
 
   return json(data, { status: response.status })
