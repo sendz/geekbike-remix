@@ -7,17 +7,19 @@ export const refreshAccessToken = async (
   const refreshToken = context.cloudflare.env.STRAVA_REFRESH_TOKEN;
   const clientId = context.cloudflare.env.STRAVA_CLIENT_ID;
   const clientSecret = context.cloudflare.env.STRAVA_CLIENT_SECRET;
+  const payload = {
+    client_id: clientId,
+    client_secret: clientSecret,
+    refresh_token: refreshToken,
+    grant_type: "refresh_token",
+  }
 
+  console.log(payload)
   try {
     const response = await fetch("https://www.strava.com/api/v3/oauth/token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        client_id: clientId,
-        client_secret: clientSecret,
-        refresh_token: refreshToken,
-        grant_type: "refresh_token",
-      }),
+      body: JSON.stringify(payload),
     }).then((res) => res.json()) as TokenData;
 
     console.log("Access token refreshed:", response);

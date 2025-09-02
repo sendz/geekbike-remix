@@ -37,8 +37,9 @@ export default {
 
   async scheduled(event, env, context) {
     const url = new URL("/api/worker/activities", env.INTERNAL_URL)
-
-    context.waitUntil(
+    console.log("SCHEDULED:", url)
+    
+    const result = await context.waitUntil(
       fetch(url.toString(), {
         method: "POST",
         headers: {
@@ -50,5 +51,7 @@ export default {
         })
       })
     )
+
+    console.log(result)
   }
 } satisfies ExportedHandler<Env>;
