@@ -2,6 +2,8 @@ import { json, LoaderFunctionArgs } from "@remix-run/server-runtime";
 import moment from "moment-timezone"
 import { StravaActivity } from "~/types/StravaActivity.type";
 import { v7 } from "uuid"
+import { sumByAthlete } from "~/utils/sumByAthlete";
+import { getValidAccessToken } from "~/auth.server";
 
 export type FetchActivitiesParams = {
   before?: number
@@ -17,7 +19,8 @@ export async function action({
   let env = context.cloudflare.env
 
   const url = new URL(`${env.STRAVA_API_URL}/v3/clubs/${env.STRAVA_CLUB_ID}/activities`);
-
+  const { accessToken } = await getValidAccessToken(request, context)
+  
   const body = await request.json() as FetchActivitiesParams
   const header = request.headers
 
@@ -53,11 +56,12 @@ export async function action({
 
   const response = await fetch(url.toString(), {
     headers: {
-      'Authorization': `Bearer ${env.STRAVA_ACCESS_TOKEN}`
+      'Authorization': `Bearer ${accessToken}`
     }
   })
 
-  const data = await response.json() as Array<StravaActivity>
+  const _data = await response.json() as Array<StravaActivity>
+  const data = sumByAthlete(_data)
 
   console.log("RESPONSE", afterTime, data)
 

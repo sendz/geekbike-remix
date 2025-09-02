@@ -2,7 +2,7 @@ import { json, LoaderFunctionArgs } from "@remix-run/server-runtime";
 import moment from "moment-timezone"
 import { getValidAccessToken } from "~/auth.server";
 import { StravaActivity } from "~/types/StravaActivity.type";
-import { refreshAccessToken } from "~/utils/strava";
+import { sumByAthlete } from "~/utils/sumByAthlete";
 
 export type FetchActivitiesParams = {
   before?: number
@@ -58,7 +58,7 @@ export async function action({
   console.log("ACTIVITIES", response)
 
   if (response.ok) {
-    return json(data.filter(activity => activity.sport_type.toLowerCase() === "ride"))
+    return json(sumByAthlete(data))
   }
 
   return json(data, { status: response.status })
