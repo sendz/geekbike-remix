@@ -12,7 +12,7 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ context }: LoaderFunctionArgs): Promise<Array<Activity>> {
   const { results } = await context.cloudflare.env.db.prepare(`
-    SELECT id, athlete_name, distance, moving_time, elapsed_time, total_elevation_gain, activity_date 
+    SELECT id, athlete_name, distance, moving_time, elapsed_time, total_elevation_gain, activity_date, activities_number 
     FROM activities 
     ORDER BY date(activity_date) ASC, distance DESC
     `).all()
@@ -39,6 +39,7 @@ const StatisticsIndex = () => {
               <th>Moving Time</th>
               <th>Elapsed Time</th>
               <th>Elevation Gain</th>
+              <th>Activities</th>
             </tr>
           </thead>
           <tbody>
@@ -50,6 +51,7 @@ const StatisticsIndex = () => {
             <td className="text-right">{moment(data.elapsed_time * 1000).format("HH:mm:ss")}</td>
             <td className="text-right">{moment(data.moving_time * 1000).format("HH:mm:ss")}</td>
             <td className="text-right">{data.total_elevation_gain}</td>
+            <td className="text-right">{data.activities_number}</td>
           </tr>
         ))}
           </tbody>

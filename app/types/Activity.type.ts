@@ -6,4 +6,5 @@ export type Activity = {
   elapsed_time: number
   total_elevation_gain: number
   activity_date: string
+  activities_number: number
 }
