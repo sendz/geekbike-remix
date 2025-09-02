@@ -15,7 +15,10 @@ export const Hero = () => {
             Join the ultimate community for tech-savvy bikers in Indonesia.
             Share builds, ideas, and passion for biking.
           </p>
+          <div className="flex flex-row justify-center gap-4">
           <a className="btn btn-primary btn-lg" href="https://strava.com/clubs/geekbikeco" target="_blank">Join Now</a>
+          <a className="btn btn-secondary btn-lg" href="/statistics">Statistics</a>
+        </div>
         </div>
       </div>
     </div>

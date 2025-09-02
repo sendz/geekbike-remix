@@ -77,7 +77,8 @@ export async function action({
         elapsed_time, 
         total_elevation_gain, 
         activity_date, 
-        inserted_at
+        inserted_at,
+        activities_number
       )
       VALUES (
         ?, 
@@ -87,6 +88,7 @@ export async function action({
         ?, 
         ?, 
         ?, 
+        ?,
         ?
       )`
 
@@ -98,7 +100,8 @@ export async function action({
           activity.elapsed_time,
           activity.total_elevation_gain,
           afterTime.toISOString(),
-          moment().toISOString()
+          moment().toISOString(),
+          activity.activities_number!
         )
           .run()
 

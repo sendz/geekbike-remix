@@ -22,7 +22,8 @@ export const sumByAthlete = (activities: StravaActivity[]): StravaActivity[] => 
         name: act.name,
         type: act.type,
         sport_type: act.sport_type,
-        workout_type: undefined
+        workout_type: undefined,
+        activities_number: 0,
       });
     }
 
@@ -31,6 +32,7 @@ export const sumByAthlete = (activities: StravaActivity[]): StravaActivity[] => 
     entry.moving_time += act.moving_time;
     entry.elapsed_time += act.elapsed_time;
     entry.total_elevation_gain += act.total_elevation_gain;
+    entry.activities_number! += 1;
   }
 
   return Array.from(map.values());

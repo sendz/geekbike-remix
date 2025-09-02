@@ -9,6 +9,7 @@ export type StravaActivity = {
   type: string
   sport_type: string
   workout_type: any
+  activities_number?: number
 }
 
 export type Athlete = {

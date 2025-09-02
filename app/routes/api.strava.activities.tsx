@@ -66,7 +66,7 @@ export async function action({
 
 export async function loader({ context }: LoaderFunctionArgs) {
   const { results } = await context.cloudflare.env.db.prepare(
-    `SELECT id, athlete_name, distance, moving_time, elapsed_time, total_elevation_gain, activity_date FROM activities`
+    `SELECT id, athlete_name, distance, moving_time, elapsed_time, total_elevation_gain, activity_date, activities_number FROM activities`
   ).all()
 
   return json(results)
