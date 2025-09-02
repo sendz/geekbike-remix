@@ -1,6 +1,8 @@
 import { json, LoaderFunctionArgs } from "@remix-run/server-runtime";
 import moment from "moment-timezone"
+import { getValidAccessToken } from "~/auth.server";
 import { StravaActivity } from "~/types/StravaActivity.type";
+import { refreshAccessToken } from "~/utils/strava";
 
 export type FetchActivitiesParams = {
   before?: number
@@ -16,14 +18,15 @@ export async function action({
   let env = context.cloudflare.env
 
   const url = new URL(`${env.STRAVA_API_URL}/v3/clubs/${env.STRAVA_CLUB_ID}/activities`);
-
+  const { accessToken } = await getValidAccessToken(request, context)
+  
   const body = await request.json() as FetchActivitiesParams
   const header = request.headers
 
   console.log('HEADERS', header)
 
   if (!header.get('Authorization') || (header.get('Authorization')?.split('Bearer ')[1] !== env.API_SECRET_KEY)) {
-    throw json({ status: 'Unauthorized'}, { status: 401})
+    throw json({ status: 'Unauthorized' }, { status: 401 })
   }
 
   if (body.range) {
@@ -46,11 +49,11 @@ export async function action({
 
   const response = await fetch(url.toString(), {
     headers: {
-      'Authorization': `Bearer ${env.STRAVA_ACCESS_TOKEN}`
+      'Authorization': `Bearer ${accessToken}`
     }
   })
 
-  const data =  await response.json() as Array<StravaActivity>
+  const data = await response.json() as Array<StravaActivity>
 
   console.log("ACTIVITIES", response)
 
