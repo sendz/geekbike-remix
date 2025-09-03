@@ -1,5 +1,16 @@
-import { AppLoadContext } from "@remix-run/server-runtime";
-import { TokenData } from "~/auth.server";
+import { AppLoadContext, LoaderFunctionArgs } from "@remix-run/server-runtime";
+import moment from "moment-timezone";
+import { getValidAccessToken, TokenData } from "~/auth.server";
+import { StravaActivity } from "~/types/StravaActivity.type";
+import { compareActivities } from "./compareActivities";
+
+export type FetchActivitiesParams = {
+  before?: number
+  after?: number
+  page?: number
+  per_page?: number
+  range?: "day" | "week" | "month"
+}
 
 export const refreshAccessToken = async (
   context: AppLoadContext
@@ -29,3 +40,67 @@ export const refreshAccessToken = async (
     return null;
   }
 };
+
+export const getActivities = async ({ context, request }: LoaderFunctionArgs): Promise<StravaActivity[]> => {
+  try {
+    let env = context.cloudflare.env
+
+    const afterTimeUrl = new URL(`${env.STRAVA_API_URL}/v3/clubs/${env.STRAVA_CLUB_ID}/activities`);
+    const beforeTimeUrl = new URL(`${env.STRAVA_API_URL}/v3/clubs/${env.STRAVA_CLUB_ID}/activities`);
+    const { accessToken } = await getValidAccessToken(request, context)
+
+    const body = await request.json() as FetchActivitiesParams
+
+    if (body.range) {
+      const afterTime = moment().tz("Asia/Jakarta").startOf(body.range).subtract(1, body.range)
+      const beforeTime = moment().tz("Asia/Jakarta").endOf(body.range).subtract(1, body.range)
+
+      beforeTimeUrl.searchParams.append("before", beforeTime.unix().toString())
+      afterTimeUrl.searchParams.append("after", afterTime.unix().toString())
+    }
+
+    if (body.before) {
+      beforeTimeUrl.searchParams.append("before", body.before?.toString())
+    }
+
+    if (body.after) {
+      afterTimeUrl.searchParams.append("after", body.after?.toString())
+    }
+
+    if (!body.page && !body.per_page) {
+      afterTimeUrl.searchParams.append("page", "1");
+      afterTimeUrl.searchParams.append("per_page", "100");
+    }
+
+    (Object.keys(body)).filter(key => !['range', 'before', 'after'].includes(key)).forEach((key) => {
+      afterTimeUrl.searchParams.append(key, (body as any)[key])
+    })
+
+    console.log("REQUEST URL", afterTimeUrl.toString());
+
+    const afterTimeResponse = await fetch(afterTimeUrl.toString(), {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    })
+
+    const beforeTimeResponse = await fetch(afterTimeUrl.toString(), {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    })
+
+    const afterTimeData = await afterTimeResponse.json() as Array<StravaActivity>
+    const beforeTimeData = await beforeTimeResponse.json() as Array<StravaActivity>
+
+    console.log("ACTIVITIES", beforeTimeResponse, afterTimeResponse)
+
+    if (afterTimeResponse.ok && beforeTimeResponse.ok) {
+      return compareActivities(beforeTimeData, afterTimeData)
+    } else {
+      throw new Error(`ERROR: Can't get After or Before Data`)
+    }
+  } catch (e: any) {
+    throw new Error(e.message)
+  }
+}
