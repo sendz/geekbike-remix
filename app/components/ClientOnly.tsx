@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export const ClientOnly = ({ 
+export const CsslientOnly = ({ 
   children, 
   fallback = null 
 }: { 
