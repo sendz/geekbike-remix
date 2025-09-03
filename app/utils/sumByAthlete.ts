@@ -5,7 +5,7 @@ export const sumByAthlete = (activities: Activity[]): Activity[] => {
 
   for (const act of activities) {
 
-    const key = act.athlete_name;
+    const key = `${act.athlete_name}-${act.activity_date}`;
     if (!map.has(key)) {
       map.set(key, {
         athlete_name: act.athlete_name,
@@ -14,7 +14,7 @@ export const sumByAthlete = (activities: Activity[]): Activity[] => {
         elapsed_time: 0,
         total_elevation_gain: 0,
         activities_number: 0,
-        id: `combined-${act.athlete_name}`,
+        id: `combined_${act.athlete_name}_${act.activity_date}`,
         activity_date: act.activity_date
       });
     }
