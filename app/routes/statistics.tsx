@@ -2,6 +2,7 @@ import { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import { Activity } from "~/types/Activity.type";
 import moment from "moment-timezone";
+import { sumByAthlete } from "~/utils/sumByAthlete";
 
 export const meta: MetaFunction = () => {
   return [
@@ -17,7 +18,7 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<Array<Act
     ORDER BY date(activity_date) ASC, distance DESC
     `).all()
 
-  return results as Array<Activity>
+  return sumByAthlete(results as Array<Activity>) as Array<Activity>
 }
 
 const StatisticsIndex = () => {

@@ -1,29 +1,21 @@
-import { StravaActivity } from "~/types/StravaActivity.type";
+import { Activity } from "~/types/Activity.type";
 
-export const sumByAthlete = (activities: StravaActivity[]): StravaActivity[] => {
-  const map = new Map<string, StravaActivity>();
+export const sumByAthlete = (activities: Activity[]): Activity[] => {
+  const map = new Map<string, Activity>();
 
   for (const act of activities) {
-    if (act.sport_type.toLowerCase() !== "ride") continue; // only Ride
 
-    const key = `${act.athlete.firstname} ${act.athlete.lastname}`;
+    const key = act.athlete_name;
     if (!map.has(key)) {
       map.set(key, {
-        athlete: {
-          resource_state: act.resource_state,
-          firstname: act.athlete.firstname,
-          lastname: act.athlete.lastname,
-        },
+        athlete_name: act.athlete_name,
         distance: 0,
         moving_time: 0,
         elapsed_time: 0,
         total_elevation_gain: 0,
-        resource_state: act.resource_state,
-        name: act.name,
-        type: act.type,
-        sport_type: act.sport_type,
-        workout_type: undefined,
         activities_number: 0,
+        id: `combined-${act.athlete_name}`,
+        activity_date: act.activity_date
       });
     }
 
