@@ -8,6 +8,6 @@ ADD COLUMN activities_number INTEGER;
 
 -- 2) Backfill existing rows with default 0
 UPDATE activities
-SET activities_number = 0
+SET activities_number = 1
 WHERE activities_number IS NULL;
 
