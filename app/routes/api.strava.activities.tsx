@@ -1,10 +1,5 @@
 import { json, LoaderFunctionArgs } from "@remix-run/server-runtime";
-import moment from "moment-timezone"
-import { getValidAccessToken } from "~/auth.server";
-import { StravaActivity } from "~/types/StravaActivity.type";
-import { compareActivities } from "~/utils/compareActivities";
 import { getActivities } from "~/utils/strava";
-import { sumByAthlete } from "~/utils/sumByAthlete";
 
 export type FetchActivitiesParams = {
   before?: number

@@ -1,9 +1,6 @@
 import { json, LoaderFunctionArgs } from "@remix-run/server-runtime";
 import moment from "moment-timezone"
-import { StravaActivity } from "~/types/StravaActivity.type";
 import { v7 } from "uuid"
-import { sumByAthlete } from "~/utils/sumByAthlete";
-import { getValidAccessToken } from "~/auth.server";
 import { getActivities } from "~/utils/strava";
 
 export type FetchActivitiesParams = {
