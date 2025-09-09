@@ -3,6 +3,7 @@ import { createRequestHandler, type ServerBuild } from "@remix-run/cloudflare";
 // @ts-ignore This file won’t exist if it hasn’t yet been built
 import * as build from "./build/server"; // eslint-disable-line import/no-unresolved
 import { getLoadContext } from "./load-context";
+import { getActivities } from "~/utils/strava";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleRemixRequest = createRequestHandler(build as any as ServerBuild);
@@ -36,6 +37,10 @@ export default {
   },
 
   async scheduled(event, env, context) {
+
+    const data = await getActivities({
+      context: context
+    })
     const url = new URL("/api/worker/activities", env.INTERNAL_URL)
     console.log("SCHEDULED:", url)
 

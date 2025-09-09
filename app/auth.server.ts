@@ -1,4 +1,3 @@
-import type { AppLoadContext } from "@remix-run/node";
 import { authCookie } from "./cookie.server";
 import { refreshAccessToken } from "./utils/strava";
 
@@ -17,7 +16,7 @@ function isTokenValid(token: TokenData | null): boolean {
   return token.expires_at > now + 60; // give 1 min buffer
 }
 
-export async function getValidAccessToken(request: Request, context: AppLoadContext) {
+export async function getValidAccessToken(request: Request, env: Env) {
   const cookieHeader = request.headers.get("Cookie");
   const token = (await authCookie.parse(cookieHeader)) as TokenData | null;
 
@@ -27,7 +26,7 @@ export async function getValidAccessToken(request: Request, context: AppLoadCont
   }
 
   // ❌ expired or missing → refresh
-  const refreshed = await refreshAccessToken(context);
+  const refreshed = await refreshAccessToken(env);
   if (!refreshed) return { accessToken: null, setCookie: null };
 
   // save refreshed token into cookie

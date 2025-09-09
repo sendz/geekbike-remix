@@ -96,7 +96,7 @@ const StatisticsIndex = () => {
           </thead>
           <tbody>
             {results.map(data => (
-              <tr>
+              <tr className="hover:bg-base-300">
                 <td>{moment(data.activity_date).tz("Asia/Jakarta").format("DD MMM YYYY")}</td>
                 <td>{data.athlete_name}</td>
                 <td className="text-right">{(data.distance / 1000).toLocaleString("id-ID")}</td>

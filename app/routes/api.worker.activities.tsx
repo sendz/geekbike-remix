@@ -1,6 +1,7 @@
 import { json, LoaderFunctionArgs } from "@remix-run/server-runtime";
 import moment from "moment-timezone"
 import { v7 } from "uuid"
+import { getValidAccessToken } from "~/auth.server";
 import { getActivities } from "~/utils/strava";
 
 export type FetchActivitiesParams = {
@@ -23,7 +24,8 @@ export async function action(args: LoaderFunctionArgs) {
 
   let afterTime = moment()
 
-  const data = await getActivities(args)
+  const { accessToken } = await getValidAccessToken(args.request, args.context.cloudflare.env)
+  const data = await getActivities(args.context.cloudflare.env, args.request, accessToken!)
 
   console.log("RESPONSE", afterTime, data)
 

@@ -1,4 +1,3 @@
-import { AppLoadContext, LoaderFunctionArgs } from "@remix-run/server-runtime";
 import moment from "moment-timezone";
 import { getValidAccessToken, TokenData } from "~/auth.server";
 import { StravaActivity } from "~/types/StravaActivity.type";
@@ -13,11 +12,11 @@ export type FetchActivitiesParams = {
 }
 
 export const refreshAccessToken = async (
-  context: AppLoadContext
+  env: Env
 ): Promise<null | TokenData> => {
-  const refreshToken = context.cloudflare.env.STRAVA_REFRESH_TOKEN;
-  const clientId = context.cloudflare.env.STRAVA_CLIENT_ID;
-  const clientSecret = context.cloudflare.env.STRAVA_CLIENT_SECRET;
+  const refreshToken = env.STRAVA_REFRESH_TOKEN;
+  const clientId = env.STRAVA_CLIENT_ID;
+  const clientSecret = env.STRAVA_CLIENT_SECRET;
   const payload = {
     client_id: clientId,
     client_secret: clientSecret,
@@ -41,13 +40,11 @@ export const refreshAccessToken = async (
   }
 };
 
-export const getActivities = async ({ context, request }: LoaderFunctionArgs): Promise<StravaActivity[]> => {
+export const getActivities = async (env: Env, request: Request, accessToken: string): Promise<StravaActivity[]> => {
   try {
-    let env = context.cloudflare.env
 
     const afterTimeUrl = new URL(`${env.STRAVA_API_URL}/v3/clubs/${env.STRAVA_CLUB_ID}/activities`);
     const beforeTimeUrl = new URL(`${env.STRAVA_API_URL}/v3/clubs/${env.STRAVA_CLUB_ID}/activities`);
-    const { accessToken } = await getValidAccessToken(request, context)
 
     const body = await request.json() as FetchActivitiesParams
 
