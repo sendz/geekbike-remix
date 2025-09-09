@@ -40,13 +40,11 @@ export const refreshAccessToken = async (
   }
 };
 
-export const getActivities = async (env: Env, request: Request, accessToken: string): Promise<StravaActivity[]> => {
+export const getActivities = async (env: Env, body: FetchActivitiesParams, accessToken: string): Promise<StravaActivity[]> => {
   try {
 
     const afterTimeUrl = new URL(`${env.STRAVA_API_URL}/v3/clubs/${env.STRAVA_CLUB_ID}/activities`);
     const beforeTimeUrl = new URL(`${env.STRAVA_API_URL}/v3/clubs/${env.STRAVA_CLUB_ID}/activities`);
-
-    const body = await request.json() as FetchActivitiesParams
 
     if (body.range) {
       const afterTime = moment().tz("Asia/Jakarta").startOf(body.range).subtract(1, body.range)

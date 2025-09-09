@@ -18,8 +18,9 @@ export async function action(args: LoaderFunctionArgs) {
   }
 
   try {
+    const body = await args.request.json() as FetchActivitiesParams
     const { accessToken } = await getValidAccessToken(args.request, args.context.cloudflare.env)
-    const data = await getActivities(args.context.cloudflare.env, args.request, accessToken!)
+    const data = await getActivities(args.context.cloudflare.env, body, accessToken!)
     return json(data)
   } catch (e) {
     console.error(e)
