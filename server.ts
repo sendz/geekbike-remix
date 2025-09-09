@@ -42,7 +42,10 @@ export default {
     switch(event.cron) {
       // Run Daily, Midnight
       case "1 17 * * *":
-        updateDataDaily(env);
+        await updateDataDaily(env);
+        break;
+      default:
+        console.log("CRON Not Supported", event.cron)
         break;
     }
 
