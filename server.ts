@@ -38,9 +38,20 @@ export default {
     }
   },
 
-  async scheduled(event, env, context) {
+  async scheduled(event: ScheduledController, env: Env, context) {
+    switch(event.cron) {
+      // Run Daily, Midnight
+      case "1 17 * * *":
+        updateDataDaily(env);
+        break;
+    }
 
-    let afterTime = moment()
+    console.log("CRON processed", event.cron)
+  }
+} satisfies ExportedHandler<Env>;
+
+const updateDataDaily = async (env: Env) => {
+  let afterTime = moment()
     const token = await refreshAccessToken(env)
     const data = await getActivities(env, { range: "day" }, token?.access_token!)
 
@@ -80,7 +91,7 @@ export default {
             activity.moving_time,
             activity.elapsed_time,
             activity.total_elevation_gain,
-            afterTime.toISOString(),
+            afterTime.tz('Asia/Jakarta').startOf('day').toISOString(),
             moment().toISOString(),
             1
           )
@@ -102,5 +113,4 @@ export default {
     }
 
     return console.log(`No Records created`)
-  }
-} satisfies ExportedHandler<Env>;
+}
