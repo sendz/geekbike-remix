@@ -17,3 +17,9 @@ export type Athlete = {
   firstname: string
   lastname: string
 }
+
+export type GetStravaActivityType = {
+  before: string
+  after: string
+  data: StravaActivity[]
+}

@@ -1,6 +1,6 @@
 import moment from "moment-timezone";
 import { getValidAccessToken, TokenData } from "~/auth.server";
-import { StravaActivity } from "~/types/StravaActivity.type";
+import { GetStravaActivityType, StravaActivity } from "~/types/StravaActivity.type";
 import { compareActivities } from "./compareActivities";
 
 export type FetchActivitiesParams = {
@@ -42,26 +42,31 @@ export const refreshAccessToken = async (
   }
 };
 
-export const getActivities = async (env: Env, body: FetchActivitiesParams, accessToken: string): Promise<StravaActivity[]> => {
+export const getActivities = async (env: Env, body: FetchActivitiesParams, accessToken: string): Promise<GetStravaActivityType> => {
   try {
 
     const afterTimeUrl = new URL(`${env.STRAVA_API_URL}/v3/clubs/${env.STRAVA_CLUB_ID}/activities`);
     const beforeTimeUrl = new URL(`${env.STRAVA_API_URL}/v3/clubs/${env.STRAVA_CLUB_ID}/activities`);
 
+    let beforeTime = null
+    let afterTime = null
+
     if (body.range) {
-      const afterTime = moment().tz("Asia/Jakarta").endOf(body.range).subtract(1, body.range)
-      const beforeTime = moment().tz("Asia/Jakarta").startOf(body.range).subtract(1, body.range)
+      afterTime = moment().tz("Asia/Jakarta").startOf(body.range).subtract(1, body.range)
+      beforeTime = moment().tz("Asia/Jakarta").endOf(body.range).subtract(1, body.range)
 
       beforeTimeUrl.searchParams.append("before", beforeTime.unix().toString())
       afterTimeUrl.searchParams.append("after", afterTime.unix().toString())
     }
 
     if (body.before) {
-      beforeTimeUrl.searchParams.append("before", moment(body.before, 'YYYY-MM-DD').endOf('day').unix().toString())
+      beforeTime = moment(body.before)
+      beforeTimeUrl.searchParams.append("before", moment(body.before, 'YYYY-MM-DDTHH:mm:ssZ').unix().toString())
     }
 
     if (body.after) {
-      afterTimeUrl.searchParams.append("after", moment(body.after, 'YYYY-MM-DD').startOf('day').unix().toString())
+      afterTime = moment(body.after)
+      afterTimeUrl.searchParams.append("after", moment(body.after, 'YYYY-MM-DDTHH:mm:ssZ').unix().toString())
     }
 
     if (body.before_unix) {
@@ -98,10 +103,14 @@ export const getActivities = async (env: Env, body: FetchActivitiesParams, acces
     const afterTimeData = await afterTimeResponse.json() as Array<StravaActivity>
     const beforeTimeData = await beforeTimeResponse.json() as Array<StravaActivity>
 
-    console.log("ACTIVITIES", beforeTimeResponse, afterTimeResponse)
+    console.log("ACTIVITIES", JSON.stringify(beforeTimeResponse), JSON.stringify(afterTimeResponse));
 
     if (afterTimeResponse.ok && beforeTimeResponse.ok) {
-      return compareActivities(beforeTimeData, afterTimeData)
+      return {
+        data: compareActivities(beforeTimeData, afterTimeData),
+        before: beforeTime?.toISOString() || "",
+        after: afterTime?.toISOString() || ""
+      }
     } else {
       throw new Error(`ERROR: Can't get After or Before Data`)
     }

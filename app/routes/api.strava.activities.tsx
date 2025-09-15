@@ -1,14 +1,6 @@
 import { json, LoaderFunctionArgs } from "@remix-run/server-runtime";
 import { getValidAccessToken } from "~/auth.server";
-import { getActivities } from "~/utils/strava";
-
-export type FetchActivitiesParams = {
-  before?: number
-  after?: number
-  page?: number
-  per_page?: number
-  range?: "day" | "week" | "month"
-}
+import { FetchActivitiesParams, getActivities } from "~/utils/strava";
 
 export async function action(args: LoaderFunctionArgs) {
   const header = args.request.headers
@@ -24,6 +16,7 @@ export async function action(args: LoaderFunctionArgs) {
     return json(data)
   } catch (e) {
     console.error(e)
+    return json(e, { status: 500 })
   }
 }
 

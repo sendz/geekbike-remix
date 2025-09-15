@@ -56,7 +56,7 @@ export default {
 const updateDataDaily = async (env: Env) => {
   let afterTime = moment()
     const token = await refreshAccessToken(env)
-    const data = await getActivities(env, { range: "day" }, token?.access_token!)
+    const { data, before, after } = await getActivities(env, { range: "day" }, token?.access_token!)
 
     console.log("RESPONSE", afterTime, data)
 
@@ -94,7 +94,7 @@ const updateDataDaily = async (env: Env) => {
             activity.moving_time,
             activity.elapsed_time,
             activity.total_elevation_gain,
-            afterTime.tz('Asia/Jakarta').startOf('day').toISOString(),
+            after || before || afterTime.tz('Asia/Jakarta').startOf('day').toISOString(),
             moment().toISOString(),
             1
           )

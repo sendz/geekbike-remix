@@ -18,7 +18,7 @@ export async function action(args: LoaderFunctionArgs) {
 
   const body = await args.request.json() as FetchActivitiesParams
   const { accessToken } = await getValidAccessToken(args.request, args.context.cloudflare.env)
-  const data = await getActivities(args.context.cloudflare.env, body, accessToken!)
+  const { data, before, after } = await getActivities(args.context.cloudflare.env, body, accessToken!)
 
   console.log("RESPONSE", afterTime, data)
 
@@ -56,7 +56,7 @@ export async function action(args: LoaderFunctionArgs) {
           activity.moving_time,
           activity.elapsed_time,
           activity.total_elevation_gain,
-          afterTime.toISOString(),
+          after || before || afterTime.toISOString(),
           moment().toISOString(),
           1
         )
@@ -73,7 +73,9 @@ export async function action(args: LoaderFunctionArgs) {
     }
 
     return json({
-      message: `Record created: ${addedData.length}`
+      message: `Record created: ${addedData.length}`,
+      before: before,
+      after: after,
     })
   }
 
