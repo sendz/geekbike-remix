@@ -4,8 +4,10 @@ import { StravaActivity } from "~/types/StravaActivity.type";
 import { compareActivities } from "./compareActivities";
 
 export type FetchActivitiesParams = {
-  before?: number
-  after?: number
+  before?: string
+  after?: string
+  before_unix?: number
+  after_unix?: number
   page?: number
   per_page?: number
   range?: "day" | "week" | "month"
@@ -47,19 +49,27 @@ export const getActivities = async (env: Env, body: FetchActivitiesParams, acces
     const beforeTimeUrl = new URL(`${env.STRAVA_API_URL}/v3/clubs/${env.STRAVA_CLUB_ID}/activities`);
 
     if (body.range) {
-      const afterTime = moment().tz("Asia/Jakarta").startOf(body.range).subtract(1, body.range)
-      const beforeTime = moment().tz("Asia/Jakarta").endOf(body.range).subtract(1, body.range)
+      const afterTime = moment().tz("Asia/Jakarta").endOf(body.range).subtract(1, body.range)
+      const beforeTime = moment().tz("Asia/Jakarta").startOf(body.range).subtract(1, body.range)
 
       beforeTimeUrl.searchParams.append("before", beforeTime.unix().toString())
       afterTimeUrl.searchParams.append("after", afterTime.unix().toString())
     }
 
     if (body.before) {
-      beforeTimeUrl.searchParams.append("before", body.before?.toString())
+      beforeTimeUrl.searchParams.append("before", moment(body.before, 'YYYY-MM-DD').endOf('day').unix().toString())
     }
 
     if (body.after) {
-      afterTimeUrl.searchParams.append("after", body.after?.toString())
+      afterTimeUrl.searchParams.append("after", moment(body.after, 'YYYY-MM-DD').startOf('day').unix().toString())
+    }
+
+    if (body.before_unix) {
+      beforeTimeUrl.searchParams.append("before", body.before_unix?.toString())
+    }
+
+    if (body.after_unix) {
+      afterTimeUrl.searchParams.append("after", body.after_unix?.toString())
     }
 
     if (!body.page && !body.per_page) {
